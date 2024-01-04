@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>next-frame.png</file>
+        <file>fast-forward.png</file>
+        <file>pause.png</file>
+        <file>play-backward.png</file>
+        <file>previous-frame.png</file>
+        <file>play-forward.png</file>
+        <file>fast-backward.png</file>
+        <file>grid.png</file>
+        <file>magnifier.png</file>
+    </qresource>
+</RCC>
