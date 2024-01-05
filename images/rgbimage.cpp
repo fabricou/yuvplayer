@@ -2,8 +2,8 @@
 #include <cstring>
 #include "rgbimage.h"
 
-RgbImage::RgbImage(int width, int height)
-    :IImage(width, height, ImgFormat::RGB)
+RgbImage::RgbImage(int width, int height, bool isInterlaced)
+    :IImage(width, height, ImgFormat::RGB, isInterlaced)
 {
     m_sizeInBytes = m_width*m_height*3;
     m_pixels.resize(m_sizeInBytes);
@@ -14,7 +14,7 @@ RgbImage::~RgbImage(){
 }
 
 RgbImage::RgbImage(const RgbImage& other) :
-    IImage(other.m_width, other.m_height, other.m_format),
+    IImage(other.m_width, other.m_height, other.m_format, other.m_isInterlaced),
     m_sizeInBytes(other.m_sizeInBytes)
 {
     m_pixels.resize(m_sizeInBytes);
@@ -25,6 +25,8 @@ RgbImage& RgbImage::operator=(const RgbImage& other) {
     if (this != &other) {
         m_width = other.m_width;
         m_height = other.m_height;
+        m_format = other.m_format;
+        m_isInterlaced = other.m_isInterlaced;
         m_sizeInBytes = other.m_sizeInBytes;
         m_pixels.resize(m_sizeInBytes);
         std::memcpy(&m_pixels[0], &other.m_pixels[0], m_sizeInBytes);
@@ -44,7 +46,7 @@ RgbImage::getBuffer() const {
 
 std::unique_ptr<RgbImage>
 RgbImage::convertToRgb() const {
-    auto dst = std::make_unique<RgbImage>(m_width, m_height);
+    auto dst = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
     clone(*dst);
     return dst;
 }
@@ -82,18 +84,19 @@ RgbImage::getSizeInBytes() const {
 
 std::unique_ptr<IImage>
 RgbImage::clone() const {
-    auto ret = std::make_unique<RgbImage>(m_width, m_height);
+    auto ret = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
     clone(*ret);
     return ret;
 }
 
 void
 RgbImage::clone(IImage &dst) const {
-    if (dst.getWidth() != m_width || dst.getHeight() != m_height || dst.getFormat() != ImgFormat::RGB) {
+    if (dst.getWidth() != m_width || dst.getHeight() != m_height || dst.getFormat() != ImgFormat::RGB || dst.isInterlaced() != m_isInterlaced) {
         std::string errorMsg = "Invalid format to clone RgbImage";
         errorMsg += " width " + std::to_string(dst.getWidth());
         errorMsg += " height " + std::to_string(dst.getHeight());
         errorMsg += " format " + std::to_string((int)dst.getFormat());
+        errorMsg += " interlaced " + std::to_string((int)dst.isInterlaced());
         throw std::runtime_error(errorMsg);
     }
     if (dst.getWidth() != m_width || dst.getHeight() != m_height) {

@@ -33,10 +33,11 @@ static std::array<std::array<std::array<_RGB, 256>, 256>, 256> createYuvToRgbLut
     return yuvToRgbLut;
 }
 
-IImage::IImage(int width, int height, ImgFormat format)
+IImage::IImage(int width, int height, ImgFormat format, bool isInterlaced)
     : m_width(width),
       m_height(height),
-      m_format(format)
+      m_format(format),
+    m_isInterlaced(isInterlaced)
 {
 }
 
@@ -56,12 +57,12 @@ IImage::RGBfromYUV(int& R, int& G, int& B, int Y, int U, int V)
 }
 
 std::unique_ptr<IImage>
-IImage::create(int width, int height, ImgFormat format) {
+IImage::create(int width, int height, ImgFormat format, bool isInterlaced) {
     switch(format) {
     case ImgFormat::I420:
-        return std::make_unique<I420Image>(width, height);
+        return std::make_unique<I420Image>(width, height, isInterlaced);
     case ImgFormat::RGB:
-        return std::make_unique<RgbImage>(width, height);
+        return std::make_unique<RgbImage>(width, height, isInterlaced);
     default:
         throw std::runtime_error("IImage::create: Format not supported");
     }

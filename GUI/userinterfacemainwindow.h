@@ -31,7 +31,7 @@ public:
 signals:
     void signalSendCreateScreen();
     void signalSendDeleteScreen();
-    void signalSendDisplayImage(const RgbImage& image);
+    void signalSendDisplayImage(RgbImage image);
     void signalSendIsScreenAvailable(bool &);
 
 private slots:

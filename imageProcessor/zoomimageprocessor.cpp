@@ -1,7 +1,7 @@
 #include "zoomimageprocessor.h"
 
 static void zoomx0_5(RgbImage &src) {
-    RgbImage clone(src.getWidth(), src.getHeight());
+    RgbImage clone(src.getWidth(), src.getHeight(), src.isInterlaced());
     src.clone(clone);
     auto width  = src.getWidth() / 2;
     auto height = src.getHeight() / 2;
@@ -21,7 +21,7 @@ static void zoomx0_5(RgbImage &src) {
 }
 
 static void zoomx2(RgbImage &src) {
-    RgbImage clone(src.getWidth(), src.getHeight());
+    RgbImage clone(src.getWidth(), src.getHeight(), src.isInterlaced());
     src.clone(clone);
     auto width  = src.getWidth() * 2;
     auto height = src.getHeight() * 2;
@@ -48,7 +48,7 @@ ZoomImageProcessor::ZoomImageProcessor(Zoom zoom)
 
 std::unique_ptr<RgbImage>
 ZoomImageProcessor::processImage(std::unique_ptr<RgbImage> src) const {
-    std::unique_ptr<RgbImage> dst = std::make_unique<RgbImage>(src->getWidth(), src->getHeight());
+    std::unique_ptr<RgbImage> dst = std::make_unique<RgbImage>(src->getWidth(), src->getHeight(), src->isInterlaced());
     src->clone(*dst);
     processImage(*dst);
     return dst;

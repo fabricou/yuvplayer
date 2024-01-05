@@ -1,4 +1,4 @@
-#include "userinterfacemainwindow.h"
+#include "GUI/userinterfacemainwindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

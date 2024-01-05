@@ -10,7 +10,7 @@ class RgbImage;
 class IImage
 {
 public:
-    IImage(int width, int height, ImgFormat format);
+    IImage(int width, int height, ImgFormat format, bool isInterlaced);
     virtual ~IImage();
 
     //IImage(const IImage&) = delete;
@@ -33,14 +33,16 @@ public:
     int getWidth() const { return m_width; }
     int getHeight() const { return m_height; }
     ImgFormat getFormat() const { return m_format; }
+    bool isInterlaced() const { return m_isInterlaced; }
 
-    static std::unique_ptr<IImage> create(int width, int height, ImgFormat format);
+    static std::unique_ptr<IImage> create(int width, int height, ImgFormat format, bool isInterlaced);
 protected:
     static void RGBfromYUV(int& R, int& G, int& B, int Y, int U, int V);
 
     int m_width{0};
     int m_height{0};
     ImgFormat m_format{ImgFormat::UNDEF};
+    bool m_isInterlaced{false};
 };
 
 #endif // IIMAGE_H

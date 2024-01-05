@@ -5,11 +5,9 @@
 #include <string>
 
 #include "images/rgbimage.h"
-#include "fileDescriptor/filedescriptor.h"
-#include "images/i420image.h"
-#include "utils/zoom.h"
-#include "utils/colorMode.h"
-#include "utils/grid.h"
+#include "../utils/zoom.h"
+#include "../utils/colorMode.h"
+#include "../utils/grid.h"
 
 bool MouseClickEater::eventFilter(QObject *obj, QEvent *event) {
 
@@ -110,10 +108,10 @@ UserInterfaceMainWindow::UserInterfaceMainWindow(QWidget *parent) :
     connect(ui->toolButtonMagnifier, &QToolButton::clicked, this, &UserInterfaceMainWindow::on_toolButtonMagnifier_clicked);
 
     //connect signal/slots for UI management from not-main threads
-    connect(this, SIGNAL(signalSendCreateScreen()), this, SLOT(signalReceiveCreateScreen()), Qt::DirectConnection);
-    connect(this, SIGNAL(signalSendDeleteScreen()), this, SLOT(signalReceiveDeleteScreen()), Qt::DirectConnection);
-    connect(this, SIGNAL(signalSendDisplayImage(RgbImage)), this, SLOT(signalReceiveDisplayImage(RgbImage)), Qt::DirectConnection);
-    connect(this, SIGNAL(signalSendIsScreenAvailable(bool&)), this, SLOT(signalReceiveIsScreenAvailable(bool&)), Qt::DirectConnection);
+    connect(this, SIGNAL(signalSendCreateScreen()), this, SLOT(signalReceiveCreateScreen()), Qt::AutoConnection);
+    connect(this, SIGNAL(signalSendDeleteScreen()), this, SLOT(signalReceiveDeleteScreen()), Qt::AutoConnection);
+    connect(this, SIGNAL(signalSendDisplayImage(RgbImage)), this, SLOT(signalReceiveDisplayImage(RgbImage)), Qt::AutoConnection);
+    connect(this, SIGNAL(signalSendIsScreenAvailable(bool&)), this, SLOT(signalReceiveIsScreenAvailable(bool&)), Qt::AutoConnection);
 
     ui->toolButtonFastBackward->setIcon(QIcon(":/fast-backward.png"));
     ui->toolButtonPreviousFrame->setIcon(QIcon(":/previous-frame.png"));
@@ -153,6 +151,7 @@ UserInterfaceMainWindow::UserInterfaceMainWindow(QWidget *parent) :
     ui->radioButtonProgressive->setChecked(true);
     ui->radioButtonInterlaced->setChecked(false);
     on_radioButtonProgressive_clicked(true);
+    ui->toolButtonGrid->setCheckable(true);
     ui->toolButtonMagnifier->setCheckable(true);
 }
 
@@ -409,10 +408,13 @@ void UserInterfaceMainWindow::on_toolButtonGrid_clicked()
 {
     if (ui->toolButtonGrid->text() == "NoGrid") {
         ui->toolButtonGrid->setText("BlackGrid");
+        ui->toolButtonGrid->setChecked(true);
     } else if (ui->toolButtonGrid->text() == "BlackGrid") {
         ui->toolButtonGrid->setText("WhiteGrid");
+        ui->toolButtonGrid->setChecked(true);
     } else if (ui->toolButtonGrid->text() == "WhiteGrid") {
         ui->toolButtonGrid->setText("NoGrid");
+        ui->toolButtonGrid->setChecked(false);
     }
     sendConfigToController();
 }

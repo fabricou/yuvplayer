@@ -8,7 +8,7 @@ InterlacedImageProcessor::InterlacedImageProcessor()
 
 std::unique_ptr<RgbImage>
 InterlacedImageProcessor::processImage(std::unique_ptr<RgbImage> src) const {
-    std::unique_ptr<RgbImage> dst = std::make_unique<RgbImage>(src->getWidth(), src->getHeight());
+    std::unique_ptr<RgbImage> dst = std::make_unique<RgbImage>(src->getWidth(), src->getHeight(), src->isInterlaced());
     src->clone(*dst);
     processImage(*dst);
     return dst;

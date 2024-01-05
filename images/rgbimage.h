@@ -7,7 +7,7 @@
 class RgbImage : public IImage
 {
 public:
-    RgbImage(int width, int height);
+    RgbImage(int width, int height, bool isInterlaced);
     ~RgbImage() override;
 
     RgbImage(const RgbImage&);

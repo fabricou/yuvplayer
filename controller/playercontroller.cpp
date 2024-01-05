@@ -25,20 +25,21 @@ PlayerController::~PlayerController() {
 
 void
 PlayerController::createImages() {
-    if (!m_image || m_image->getWidth() != m_width || m_image->getHeight() != m_height || m_image->getFormat() != m_format) {
-        m_image = IImage::create(m_width, m_height, m_format);
+    if (!m_image || m_image->getWidth() != m_width || m_image->getHeight() != m_height || m_image->getFormat() != m_format || m_image->isInterlaced() != m_isInterlaced) {
+        m_image = IImage::create(m_width, m_height, m_format, m_isInterlaced);
     }
     if (!m_rgbImage || m_rgbImage->getWidth() != m_width || m_rgbImage->getHeight() != m_height || m_rgbImage->getFormat() != ImgFormat::RGB) {
-        m_rgbImage = std::make_unique<RgbImage>(m_width, m_height);
+        m_rgbImage = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
     }
     if (!m_rgbDisplayImage || m_rgbDisplayImage->getFormat() != ImgFormat::RGB) {
-        m_rgbDisplayImage = std::make_unique<RgbImage>(m_width, m_height);
+        m_rgbDisplayImage = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
     }
 }
 
 void
 PlayerController::refresh(bool resetFrameIndex) {
     std::lock_guard lock(m_mutex);
+
     if (m_file && m_file->isOpen() && m_format != ImgFormat::UNDEF && m_width >= 0 && m_height >= 0) {
         if (!isScreenAvailable()) {
             createScreen();

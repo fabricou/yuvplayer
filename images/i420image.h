@@ -7,7 +7,7 @@
 class I420Image  : public IImage
 {
 public:
-    I420Image(int width, int height);
+    I420Image(int width, int height, bool isInterlaced);
     ~I420Image() override = default;
 
     uint8_t *getBuffer() override;
@@ -27,7 +27,6 @@ public:
 private:
     std::vector<uint8_t> m_pixels;
     size_t m_sizeInBytes{0};
-
 };
 
 #endif // I420IMAGE_H

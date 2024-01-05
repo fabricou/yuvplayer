@@ -24,14 +24,14 @@ SOURCES += main.cpp\
     imageProcessor/interlacedimageprocessor.cpp \
     imageProcessor/magnifierimageprocessor.cpp \
     imageProcessor/zoomimageprocessor.cpp \
-        userinterfacemainwindow.cpp \
+    GUI/userinterfacemainwindow.cpp \
     images/iimage.cpp \
     images/rgbimage.cpp \
     images/i420image.cpp \
-    imagewidget.cpp \
+    GUI/imagewidget.cpp \
     utils/magnifier.cpp
 
-HEADERS  += userinterfacemainwindow.h \
+HEADERS  += GUI/userinterfacemainwindow.h \
     controller/playercontroller.h \
     fileDescriptor/filedescriptor.h \
     imageProcessor/colormodeimageprocessor.h \
@@ -44,7 +44,7 @@ HEADERS  += userinterfacemainwindow.h \
     images/rgbimage.h \
     images/imgformat.h \
     images/i420image.h \
-    imagewidget.h \
+    GUI/imagewidget.h \
     utils/colorMode.h \
     utils/grid.h \
     utils/magnifier.h \

@@ -4,8 +4,8 @@
 
 #include <QDebug>
 
-I420Image::I420Image(int width, int height)
-    :IImage(width, height, ImgFormat::I420)
+I420Image::I420Image(int width, int height, bool isInterlaced)
+    : IImage(width, height, ImgFormat::I420, isInterlaced)
 {
     m_sizeInBytes = m_width*m_height*3/2;
     m_pixels.resize(m_sizeInBytes);
@@ -23,7 +23,7 @@ I420Image::getBuffer() const {
 
 std::unique_ptr<RgbImage>
 I420Image::convertToRgb() const {
-    auto rgbimage = std::make_unique<RgbImage>(m_width, m_height);
+    auto rgbimage = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
     convertToRgb(rgbimage);
     return rgbimage;
 }
@@ -41,25 +41,46 @@ I420Image::convertToRgb(const std::unique_ptr<RgbImage> &dst) const {
 
     uint8_t *rgbBuffer = dst->getBuffer();
 
-    for (int i = 0; i < m_height; ++i) {
-        //qDebug() << "line i " << i << "\n";
-        for (int j = 0; j < m_width; ++j) {
-            //qDebug() << "row j " << j << "\n";
-            int Y = bufferY[j];
-            int U = bufferU[j/2];
-            int V = bufferV[j/2];
-            int R = 0, G = 0, B = 0;
-            IImage::RGBfromYUV(R, G, B, Y, U, V);
-            rgbBuffer[3*j] = R;
-            rgbBuffer[3*j+1] = G;
-            rgbBuffer[3*j+2] = B;
+    if (!m_isInterlaced) {
+        for (int i = 0; i < m_height; ++i) {
+            //qDebug() << "line i " << i << "\n";
+            for (int j = 0; j < m_width; ++j) {
+                //qDebug() << "row j " << j << "\n";
+                int Y = bufferY[j];
+                int U = bufferU[j/2];
+                int V = bufferV[j/2];
+                int R = 0, G = 0, B = 0;
+                IImage::RGBfromYUV(R, G, B, Y, U, V);
+                rgbBuffer[3*j] = R;
+                rgbBuffer[3*j+1] = G;
+                rgbBuffer[3*j+2] = B;
+            }
+            bufferY += m_width;
+            if (i%2==1) {
+                bufferU += (m_width/2);
+                bufferV += (m_width/2);
+            }
+            rgbBuffer += 3*m_width;
         }
-        bufferY += m_width;
-        if (i%2==1) {
-            bufferU += (m_width/2);
-            bufferV += (m_width/2);
+    } else { //interlaced case
+        const uint8_t *srcU = bufferU;
+        const uint8_t *srcV = bufferV;
+        for (int i = 0; i < m_height; ++i) {
+            bufferU = (i%2 == 0)? srcU + ((i/4)*2)*(m_width/2) : srcU + ((i/4)*2 +1)*(m_width/2);
+            bufferV = (i%2 == 0)? srcV + ((i/4)*2)*(m_width/2) : srcV + ((i/4)*2 +1)*(m_width/2);
+            for (int j = 0; j < m_width; ++j) {
+                int Y = bufferY[j];
+                int U = bufferU[j/2];
+                int V = bufferV[j/2];
+                int R = 0, G = 0, B = 0;
+                IImage::RGBfromYUV(R, G, B, Y, U, V);
+                rgbBuffer[3*j] = R;
+                rgbBuffer[3*j+1] = G;
+                rgbBuffer[3*j+2] = B;
+            }
+            bufferY += m_width;
+            rgbBuffer += 3*m_width;
         }
-        rgbBuffer += 3*m_width;
     }
 }
 
@@ -91,7 +112,7 @@ I420Image::getSizeInBytes() const {
 
 std::unique_ptr<IImage>
 I420Image::clone() const {
-    auto ret = std::make_unique<I420Image>(m_width, m_height);
+    auto ret = std::make_unique<I420Image>(m_width, m_height, m_isInterlaced);
     clone(*ret);
     return ret;
 }
