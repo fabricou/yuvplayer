@@ -7,6 +7,8 @@
 #include "controller/playercontroller.h"
 #include "utils/magnifier.h"
 
+Q_DECLARE_METATYPE(RgbImage)
+
 class MouseClickEater : public QObject
 {
     Q_OBJECT
@@ -32,13 +34,11 @@ signals:
     void signalSendCreateScreen();
     void signalSendDeleteScreen();
     void signalSendDisplayImage(RgbImage image);
-    void signalSendIsScreenAvailable(bool &);
 
 private slots:
     void signalReceiveCreateScreen();
     void signalReceiveDeleteScreen();
     void signalReceiveDisplayImage(RgbImage image);
-    void signalReceiveIsScreenAvailable(bool &);
 
 private:
     friend class MouseClickEater;

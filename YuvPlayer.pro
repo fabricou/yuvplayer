@@ -25,10 +25,13 @@ SOURCES += main.cpp\
     imageProcessor/magnifierimageprocessor.cpp \
     imageProcessor/zoomimageprocessor.cpp \
     GUI/userinterfacemainwindow.cpp \
+    images/i422image.cpp \
+    images/i444image.cpp \
     images/iimage.cpp \
     images/rgbimage.cpp \
     images/i420image.cpp \
     GUI/imagewidget.cpp \
+    images/uyvyimage.cpp \
     utils/magnifier.cpp
 
 HEADERS  += GUI/userinterfacemainwindow.h \
@@ -40,11 +43,14 @@ HEADERS  += GUI/userinterfacemainwindow.h \
     imageProcessor/interlacedimageprocessor.h \
     imageProcessor/magnifierimageprocessor.h \
     imageProcessor/zoomimageprocessor.h \
+    images/i422image.h \
+    images/i444image.h \
     images/iimage.h \
     images/rgbimage.h \
     images/imgformat.h \
     images/i420image.h \
     GUI/imagewidget.h \
+    images/uyvyimage.h \
     utils/colorMode.h \
     utils/grid.h \
     utils/magnifier.h \

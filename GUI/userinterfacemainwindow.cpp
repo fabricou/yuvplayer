@@ -85,6 +85,8 @@ UserInterfaceMainWindow::UserInterfaceMainWindow(QWidget *parent) :
     createController();
     m_mouseClickEater = std::make_unique<MouseClickEater>(this);
 
+    qRegisterMetaType<RgbImage>();
+
     connect(ui->pushButtonOpen, &QPushButton::clicked, this, &UserInterfaceMainWindow::on_pushButtonOpen_clicked);
     connect(ui->pushButtonClose, &QPushButton::clicked, this, &UserInterfaceMainWindow::on_pushButtonClose_clicked);
     connect(ui->lineEditWidth, &QLineEdit::returnPressed, this, &UserInterfaceMainWindow::on_lineEditWidth_returnPressed);
@@ -111,7 +113,6 @@ UserInterfaceMainWindow::UserInterfaceMainWindow(QWidget *parent) :
     connect(this, SIGNAL(signalSendCreateScreen()), this, SLOT(signalReceiveCreateScreen()), Qt::AutoConnection);
     connect(this, SIGNAL(signalSendDeleteScreen()), this, SLOT(signalReceiveDeleteScreen()), Qt::AutoConnection);
     connect(this, SIGNAL(signalSendDisplayImage(RgbImage)), this, SLOT(signalReceiveDisplayImage(RgbImage)), Qt::AutoConnection);
-    connect(this, SIGNAL(signalSendIsScreenAvailable(bool&)), this, SLOT(signalReceiveIsScreenAvailable(bool&)), Qt::AutoConnection);
 
     ui->toolButtonFastBackward->setIcon(QIcon(":/fast-backward.png"));
     ui->toolButtonPreviousFrame->setIcon(QIcon(":/previous-frame.png"));
@@ -173,10 +174,6 @@ void UserInterfaceMainWindow::signalReceiveDisplayImage(RgbImage image){
     }
 }
 
-void UserInterfaceMainWindow::signalReceiveIsScreenAvailable(bool &isAvail){
-    isAvail = (m_imageWidget && m_imageWidget->isVisible());
-}
-
 void
 UserInterfaceMainWindow::createController() {
     auto createScreen = [this](){
@@ -194,13 +191,6 @@ UserInterfaceMainWindow::createController() {
         //m_imageWidget.reset(nullptr);
     };
 
-    auto isScreenAvailable = [this]() {
-        bool isAvail = false;
-        emit signalSendIsScreenAvailable(isAvail);
-        return isAvail;
-        //return (m_imageWidget && m_imageWidget->isVisible());
-    };
-
     auto displayImage = [this](const RgbImage& image) {
         emit signalSendDisplayImage(image);
         /*
@@ -210,7 +200,7 @@ UserInterfaceMainWindow::createController() {
         */
     };
 
-    m_playerController = std::make_unique<PlayerController>(createScreen, deleteScreen, isScreenAvailable, displayImage);
+    m_playerController = std::make_unique<PlayerController>(createScreen, deleteScreen, displayImage);
 }
 
 void

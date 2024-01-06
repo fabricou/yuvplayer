@@ -21,7 +21,6 @@ class PlayerController
 public:
     PlayerController(std::function<void(void)> createScreen,
         std::function<void(void)> deleteScreen,
-        std::function<bool(void)> isScreenAvailable,
         std::function<void(const RgbImage&)> displayImage);
     ~PlayerController();
 
@@ -55,7 +54,6 @@ private:
     //delegated to extern API
     void createScreen();
     void deleteScreen();
-    bool isScreenAvailable();
     void displayImage();
 
     //player management
@@ -81,7 +79,6 @@ private:
 
     std::function<void(void)> m_createScreen = [](){};
     std::function<void(void)> m_deleteScreen = [](){};
-    std::function<bool(void)> m_isScreenAvailable = [](){return false;};
     std::function<void(const RgbImage&)> m_displayImage = [](const RgbImage&){};
 
     std::mutex m_mutex;

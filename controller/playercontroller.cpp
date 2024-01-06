@@ -10,11 +10,9 @@
 
 PlayerController::PlayerController(std::function<void(void)> createScreen,
                  std::function<void(void)> deleteScreen,
-                 std::function<bool(void)> isScreenAvailable,
                  std::function<void(const RgbImage&)> displayImage)
     : m_createScreen(createScreen),
     m_deleteScreen(deleteScreen),
-    m_isScreenAvailable(isScreenAvailable),
     m_displayImage(displayImage)
 {
 }
@@ -38,19 +36,22 @@ PlayerController::createImages() {
 
 void
 PlayerController::refresh(bool resetFrameIndex) {
-    std::lock_guard lock(m_mutex);
-
-    if (m_file && m_file->isOpen() && m_format != ImgFormat::UNDEF && m_width >= 0 && m_height >= 0) {
-        if (!isScreenAvailable()) {
+    auto playFunc = [this, resetFrameIndex](){
+        std::lock_guard lock(m_mutex);
+        if (m_file && m_file->isOpen() && m_format != ImgFormat::UNDEF && m_width >= 0 && m_height >= 0) {
             createScreen();
+            createImages();
+            if (resetFrameIndex) {
+                m_imageNum = 0;
+            }
+            m_numberOfImages = m_file->getSize() / m_image->getSizeInBytes();
+            m_image->readImage(*m_file, m_imageNum);
+            displayImage();
         }
-        createImages();
-        if (resetFrameIndex) {
-            m_imageNum = 0;
-        }
-        m_numberOfImages = m_file->getSize() / m_image->getSizeInBytes();
-        m_image->readImage(*m_file, m_imageNum);
-        displayImage();
+    };
+    auto currentThread = std::thread(playFunc);
+    if (currentThread.joinable()) {
+        currentThread.join();
     }
 }
 
@@ -181,11 +182,6 @@ PlayerController::deleteScreen() {
     m_deleteScreen();
 }
 
-bool
-PlayerController::isScreenAvailable() {
-    return m_isScreenAvailable();
-}
-
 void
 PlayerController::displayImage() {
     if (m_image) {
@@ -233,10 +229,8 @@ void
 PlayerController::startPlayerThread(std::function<void(std::atomic<bool> &)> playFunc) {
     stopPlayerThread();
     if (m_file && m_file->isOpen() && m_format != ImgFormat::UNDEF && m_width >= 0 && m_height >= 0) {
-        if (!isScreenAvailable()) {
-            deleteScreen();
-            createScreen();
-        }
+        deleteScreen();
+        createScreen();
         createImages();
         m_stopPlayer = false;
         m_playerThread = std::thread(playFunc, std::ref(m_stopPlayer));
