@@ -1,9 +1,10 @@
 #include <algorithm>
 #include <cstring>
 #include "rgbimage.h"
+#include "i444image.h"
 
 RgbImage::RgbImage(int width, int height, bool isInterlaced)
-    :IImage(width, height, ImgFormat::RGB, isInterlaced)
+    :ImageBase(width, height, ImgFormat::RGB, isInterlaced)
 {
     m_sizeInBytes = m_width*m_height*3;
     m_pixels.resize(m_sizeInBytes);
@@ -14,9 +15,9 @@ RgbImage::~RgbImage(){
 }
 
 RgbImage::RgbImage(const RgbImage& other) :
-    IImage(other.m_width, other.m_height, other.m_format, other.m_isInterlaced),
-    m_sizeInBytes(other.m_sizeInBytes)
+    ImageBase(other.m_width, other.m_height, other.m_format, other.m_isInterlaced)
 {
+    m_sizeInBytes = other.m_sizeInBytes;
     m_pixels.resize(m_sizeInBytes);
     std::memcpy(&m_pixels[0], &other.m_pixels[0], m_sizeInBytes);
 }
@@ -56,6 +57,38 @@ RgbImage::convertToRgb(const std::unique_ptr<RgbImage> &dst) const {
     clone(*dst);
 }
 
+std::unique_ptr<I444Image>
+RgbImage::convertToI444() const {
+    auto i444image = std::make_unique<I444Image>(m_width, m_height, m_isInterlaced);
+    convertToI444(i444image);
+    return i444image;
+}
+
+void
+RgbImage::convertToI444(const std::unique_ptr<I444Image> &dst) const {
+    if (!dst || dst->getWidth() != m_width || dst->getHeight() != m_height || dst->getFormat() != ImgFormat::I444) {
+        throw std::runtime_error("RGB to I444 conversion: invalid I444 destination");
+    }
+    const uint8_t *buffer = m_pixels.data();
+
+    int offset = m_width*m_height;
+    uint8_t *i444BufferY = dst->getBuffer();
+    uint8_t *i444BufferU = i444BufferY + offset;
+    uint8_t *i444BufferV = i444BufferU + offset;
+
+    for (int i = 0; i < m_height; ++i) {
+        for (int j = 0; j < m_width; ++j) {
+            i444BufferY[j] = buffer[3*j];
+            i444BufferU[j] = buffer[3*j+1];
+            i444BufferV[j] = buffer[3*j+2];
+        }
+        buffer += 3*m_width;
+        i444BufferY += m_width;
+        i444BufferU += m_width;
+        i444BufferV += m_width;
+    }
+}
+
 bool
 RgbImage::readImage(FileDescriptor &file, int index) {
     if (file.getIfstream().is_open()) {
@@ -77,41 +110,11 @@ RgbImage::readImage(FileDescriptor &file, int index) {
     return false;
 }
 
-size_t
-RgbImage::getSizeInBytes() const {
-    return m_sizeInBytes;
-}
-
-std::unique_ptr<IImage>
-RgbImage::clone() const {
-    auto ret = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
-    clone(*ret);
-    return ret;
-}
-
 void
-RgbImage::clone(IImage &dst) const {
-    if (dst.getWidth() != m_width || dst.getHeight() != m_height || dst.getFormat() != ImgFormat::RGB || dst.isInterlaced() != m_isInterlaced) {
-        std::string errorMsg = "Invalid format to clone RgbImage";
-        errorMsg += " width " + std::to_string(dst.getWidth());
-        errorMsg += " height " + std::to_string(dst.getHeight());
-        errorMsg += " format " + std::to_string((int)dst.getFormat());
-        errorMsg += " interlaced " + std::to_string((int)dst.isInterlaced());
-        throw std::runtime_error(errorMsg);
-    }
-    if (dst.getWidth() != m_width || dst.getHeight() != m_height) {
-        dst.resize(m_width, m_height);
-    }
-    std::memcpy(dst.getBuffer(), &m_pixels[0], getSizeInBytes());
-}
-
-void
-RgbImage::resize(int width, int height) {
-    if (width != m_width || height != m_height) {
-        m_width = width;
-        m_height = height;
-        m_sizeInBytes = m_width*m_height*3;
-        m_pixels.resize(m_sizeInBytes);
-    }
+RgbImage::resize(int width, int height) {    
+    m_width = width;
+    m_height = height;
+    m_sizeInBytes = m_width*m_height*3;
+    m_pixels.resize(m_sizeInBytes);
 }
 

@@ -1,6 +1,7 @@
 #include "colormodeimageprocessor.h"
 #include <algorithm>
 #include <array>
+#include <cstring>
 
 static void YUVfromRGB(int &Y, int &U, int &V, int R, int G, int B)
 {
@@ -75,4 +76,34 @@ ColorModeImageProcessor::processImage(RgbImage& src) const {
         srcBuffer += 3;
         dstBuffer += 3;
     }
+}
+
+std::unique_ptr<I444Image>
+ColorModeImageProcessor::processImage(std::unique_ptr<I444Image> src) const {
+    std::unique_ptr<I444Image> dst = std::make_unique<I444Image>(src->getWidth(), src->getHeight(), src->isInterlaced());
+    src->clone(*dst);
+    processImage(*dst);
+    return dst;
+}
+
+void
+ColorModeImageProcessor::processImage(I444Image& src) const {
+    ImageProcessor::processImage(src);
+    if (m_colorMode == ColorMode::UNDEF || m_colorMode == ColorMode::YUV) {
+        return;
+    }
+    auto clone = src.clone();
+    uint8_t *srcBuffer = clone->getBuffer();
+    uint8_t *dstBuffer = src.getBuffer();
+    int offset = src.getWidth()*src.getHeight();
+
+    if (m_colorMode == ColorMode::Y) {
+        std::memcpy(dstBuffer, &srcBuffer[0], offset);
+    } else if (m_colorMode == ColorMode::U) {
+        std::memcpy(dstBuffer, &srcBuffer[offset], offset);
+    } else if (m_colorMode == ColorMode::V) {
+        std::memcpy(dstBuffer, &srcBuffer[2*offset], offset);
+    }
+    dstBuffer += offset;
+    std::memset(dstBuffer, 127, 2*offset);
 }

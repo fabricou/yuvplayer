@@ -2,9 +2,9 @@
 #define I420IMAGE_H
 
 #include <vector>
-#include "iimage.h"
+#include "imagebase.h"
 
-class I420Image  : public IImage
+class I420Image  : public ImageBase
 {
 public:
     I420Image(int width, int height, bool isInterlaced);
@@ -15,18 +15,15 @@ public:
 
     void resize(int width, int height) override;
 
-    std::unique_ptr<IImage> clone() const override;
-    void clone(IImage& dst) const override;
-
     std::unique_ptr<RgbImage> convertToRgb() const override;
     void convertToRgb(const std::unique_ptr<RgbImage> &dst) const override;
+    std::unique_ptr<I444Image> convertToI444() const override;
+    void convertToI444(const std::unique_ptr<I444Image>&) const override;
 
     bool readImage(FileDescriptor &file, int index = -1) override;
-    size_t getSizeInBytes() const override;
 
 private:
     std::vector<uint8_t> m_pixels;
-    size_t m_sizeInBytes{0};
 };
 
 #endif // I420IMAGE_H

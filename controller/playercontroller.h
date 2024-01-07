@@ -62,8 +62,9 @@ private:
     void createImages();
 
     std::unique_ptr<FileDescriptor> m_file;
-    std::unique_ptr<IImage> m_image{nullptr};
+    std::unique_ptr<ImageBase> m_image{nullptr};
     std::unique_ptr<RgbImage> m_rgbImage{nullptr};
+    std::unique_ptr<I444Image> m_i444Image{nullptr};
     std::unique_ptr<RgbImage> m_rgbDisplayImage{nullptr};
 
     size_t m_imageNum{std::numeric_limits<size_t>::max()};

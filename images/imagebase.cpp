@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <array>
-#include "iimage.h"
+#include <cstring>
+#include "imagebase.h"
 #include "i420image.h"
+#include "i444image.h"
 #include "rgbimage.h"
 
 static void RGBfromYUV(int& R, int& G, int& B, int Y, int U, int V)
@@ -33,19 +35,8 @@ static std::array<std::array<std::array<_RGB, 256>, 256>, 256> createYuvToRgbLut
     return yuvToRgbLut;
 }
 
-IImage::IImage(int width, int height, ImgFormat format, bool isInterlaced)
-    : m_width(width),
-      m_height(height),
-      m_format(format),
-    m_isInterlaced(isInterlaced)
-{
-}
-
-IImage::~IImage() {
-}
-
 void
-IImage::RGBfromYUV(int& R, int& G, int& B, int Y, int U, int V)
+ImageBase::RGBfromYUV(int& R, int& G, int& B, int Y, int U, int V)
 {
     static auto yuvToRgbLut = createYuvToRgbLut();
     Y = std::clamp(Y, 0, 255);
@@ -56,11 +47,44 @@ IImage::RGBfromYUV(int& R, int& G, int& B, int Y, int U, int V)
     B = yuvToRgbLut[Y][U][V].B;
 }
 
-std::unique_ptr<IImage>
-IImage::create(int width, int height, ImgFormat format, bool isInterlaced) {
+ImageBase::ImageBase(int width, int height, ImgFormat format, bool isInterlaced)
+    : m_width(width),
+      m_height(height),
+      m_isInterlaced(isInterlaced),
+      m_format(format)
+{
+}
+
+ImageBase::~ImageBase() {
+}
+
+std::unique_ptr<ImageBase>
+ImageBase::clone() const {
+    auto ret = ImageBase::create(m_width, m_height, m_format, m_isInterlaced);
+    clone(*ret);
+    return ret;
+}
+
+void
+ImageBase::clone(ImageBase &dst) const {
+    if (dst.getWidth() != m_width || dst.getHeight() != m_height || dst.isInterlaced() != m_isInterlaced || dst.getFormat() != m_format) {
+        std::string errorMsg = "Invalid format to clone " + yuvp::toString(m_format) + " Image";
+        errorMsg += " width " + std::to_string(dst.getWidth());
+        errorMsg += " height " + std::to_string(dst.getHeight());
+        errorMsg += " format " + std::to_string((int)dst.getFormat());
+        errorMsg += " interlaced " + std::to_string((int)dst.isInterlaced());
+        throw std::runtime_error(errorMsg);
+    }
+    std::memcpy(dst.getBuffer(), getBuffer(), getSizeInBytes());
+}
+
+std::unique_ptr<ImageBase>
+ImageBase::create(int width, int height, ImgFormat format, bool isInterlaced) {
     switch(format) {
     case ImgFormat::I420:
         return std::make_unique<I420Image>(width, height, isInterlaced);
+    case ImgFormat::I444:
+        return std::make_unique<I444Image>(width, height, isInterlaced);
     case ImgFormat::RGB:
         return std::make_unique<RgbImage>(width, height, isInterlaced);
     default:

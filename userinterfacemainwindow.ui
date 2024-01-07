@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>221</width>
+    <width>223</width>
     <height>613</height>
    </rect>
   </property>
@@ -20,83 +20,17 @@
       <x>10</x>
       <y>40</y>
       <width>191</width>
-      <height>121</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="title">
      <string>Image size</string>
     </property>
-    <widget class="QWidget" name="horizontalLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>70</y>
-       <width>171</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLabel" name="labelWidth">
-        <property name="text">
-         <string>width</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="lineEditWidth">
-        <property name="text">
-         <string>720</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="labelHeight">
-        <property name="text">
-         <string>height</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="lineEditHeight">
-        <property name="text">
-         <string>576</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
     <widget class="QWidget" name="horizontalLayoutWidget_2">
      <property name="geometry">
       <rect>
        <x>9</x>
-       <y>29</y>
+       <y>20</y>
        <width>161</width>
        <height>31</height>
       </rect>
@@ -118,12 +52,52 @@
       </item>
      </layout>
     </widget>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>161</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEditWidth">
+        <property name="text">
+         <string>720</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelWidth">
+        <property name="text">
+         <string>width</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelHeight">
+        <property name="text">
+         <string>height</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEditHeight">
+        <property name="text">
+         <string>576</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_3">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>170</y>
+      <y>180</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -145,6 +119,11 @@
        </item>
        <item>
         <property name="text">
+         <string>I444</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>UYVY</string>
         </property>
        </item>
@@ -156,9 +135,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>200</y>
+      <y>210</y>
       <width>171</width>
-      <height>141</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
@@ -168,7 +147,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
+       <y>30</y>
        <width>151</width>
        <height>41</height>
       </rect>
@@ -280,7 +259,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>110</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -342,7 +321,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>260</y>
+      <y>280</y>
       <width>111</width>
       <height>41</height>
      </rect>
@@ -429,7 +408,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>350</y>
+      <y>370</y>
       <width>111</width>
       <height>81</height>
      </rect>
@@ -442,8 +421,8 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>91</width>
-       <height>52</height>
+       <width>107</width>
+       <height>54</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -468,7 +447,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>370</y>
+      <y>390</y>
       <width>82</width>
       <height>61</height>
      </rect>
@@ -494,7 +473,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>440</y>
+      <y>460</y>
       <width>81</width>
       <height>41</height>
      </rect>

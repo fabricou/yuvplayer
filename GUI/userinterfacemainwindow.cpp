@@ -35,6 +35,8 @@ bool MouseClickEater::eventFilter(QObject *obj, QEvent *event) {
 static ImgFormat convertComboStringToImgFormat(QString format) {
     if (format == "I420") {
         return ImgFormat::I420;
+    } else if (format == "I444") {
+        return ImgFormat::I444;
     } else if (format == "UYVY") {
         return ImgFormat::UYVY;
     }

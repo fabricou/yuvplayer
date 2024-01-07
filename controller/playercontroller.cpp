@@ -1,7 +1,7 @@
 #include <chrono>
 #include <ctime>
 #include "playercontroller.h"
-#include "../images/iimage.h"
+#include "../images/imagebase.h"
 #include "../imageProcessor/interlacedimageprocessor.h"
 #include "../imageProcessor/zoomimageprocessor.h"
 #include "../imageProcessor/colormodeimageprocessor.h"
@@ -24,10 +24,13 @@ PlayerController::~PlayerController() {
 void
 PlayerController::createImages() {
     if (!m_image || m_image->getWidth() != m_width || m_image->getHeight() != m_height || m_image->getFormat() != m_format || m_image->isInterlaced() != m_isInterlaced) {
-        m_image = IImage::create(m_width, m_height, m_format, m_isInterlaced);
+        m_image = ImageBase::create(m_width, m_height, m_format, m_isInterlaced);
     }
     if (!m_rgbImage || m_rgbImage->getWidth() != m_width || m_rgbImage->getHeight() != m_height || m_rgbImage->getFormat() != ImgFormat::RGB) {
         m_rgbImage = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
+    }
+    if (!m_i444Image || m_i444Image->getWidth() != m_width || m_i444Image->getHeight() != m_height || m_i444Image->getFormat() != ImgFormat::I444) {
+        m_i444Image = std::make_unique<I444Image>(m_width, m_height, m_isInterlaced);
     }
     if (!m_rgbDisplayImage || m_rgbDisplayImage->getFormat() != ImgFormat::RGB) {
         m_rgbDisplayImage = std::make_unique<RgbImage>(m_width, m_height, m_isInterlaced);
@@ -185,7 +188,8 @@ PlayerController::deleteScreen() {
 void
 PlayerController::displayImage() {
     if (m_image) {
-        m_image->convertToRgb(m_rgbImage);
+        m_i444Image->resize(m_image->getWidth(), m_image->getHeight());
+        m_image->convertToI444(m_i444Image);
         std::unique_ptr<ImageProcessor> processor = std::make_unique<ImageProcessor>();
         //warning: order of image processing matter
         if (!m_magnifier.getPoints().empty()) {
@@ -210,9 +214,9 @@ PlayerController::displayImage() {
             std::unique_ptr<ImageProcessor> interlacedProcessor = std::make_unique<InterlacedImageProcessor>();
             processor->addImageProcessor(std::move(interlacedProcessor));
         }
-        m_rgbDisplayImage->resize(m_rgbImage->getWidth(), m_rgbImage->getHeight());
-        m_rgbImage->clone(*m_rgbDisplayImage);
-        processor->processImage(*m_rgbDisplayImage);
+        processor->processImage(*m_i444Image);
+        m_rgbDisplayImage->resize(m_i444Image->getWidth(), m_i444Image->getHeight());
+        m_i444Image->convertToRgb(m_rgbDisplayImage);
         m_displayImage(*m_rgbDisplayImage);
     }
 }
