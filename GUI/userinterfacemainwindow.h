@@ -33,12 +33,12 @@ public:
 signals:
     void signalSendCreateScreen();
     void signalSendDeleteScreen();
-    void signalSendDisplayImage(RgbImage image);
+    void signalSendDisplayImage(RgbImage image, int currentImageId, int maxImageId);
 
 private slots:
     void signalReceiveCreateScreen();
     void signalReceiveDeleteScreen();
-    void signalReceiveDisplayImage(RgbImage image);
+    void signalReceiveDisplayImage(RgbImage image, int currentImageId, int maxImageId);
 
 private:
     friend class MouseClickEater;

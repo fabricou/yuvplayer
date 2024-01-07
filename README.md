@@ -6,7 +6,9 @@ The code has been designed to keep separate the GUI and the backend, so that mig
 The backend relies on C++ standard only to make it easily portable.
 
 ## what is supported today
-* YUV player for I420 raw video
+* YUV player for:
+    * I420
+    * I444
 * zoom x0.5, x2
 * add 16x16 white/black grid on video
 * display only Y, U or V component
@@ -20,6 +22,5 @@ The backend relies on C++ standard only to make it easily portable.
 
 ## nice to have
 What could be improved in future:
-* do not use RGB image to do all image processing
 * add small toolbox to do extraction, conversion... 
 

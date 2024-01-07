@@ -10,7 +10,7 @@
 
 PlayerController::PlayerController(std::function<void(void)> createScreen,
                  std::function<void(void)> deleteScreen,
-                 std::function<void(const RgbImage&)> displayImage)
+                 std::function<void(const RgbImage&,int,int)> displayImage)
     : m_createScreen(createScreen),
     m_deleteScreen(deleteScreen),
     m_displayImage(displayImage)
@@ -217,7 +217,7 @@ PlayerController::displayImage() {
         processor->processImage(*m_i444Image);
         m_rgbDisplayImage->resize(m_i444Image->getWidth(), m_i444Image->getHeight());
         m_i444Image->convertToRgb(m_rgbDisplayImage);
-        m_displayImage(*m_rgbDisplayImage);
+        m_displayImage(*m_rgbDisplayImage, m_imageNum, m_numberOfImages-1);
     }
 }
 
@@ -233,7 +233,6 @@ void
 PlayerController::startPlayerThread(std::function<void(std::atomic<bool> &)> playFunc) {
     stopPlayerThread();
     if (m_file && m_file->isOpen() && m_format != ImgFormat::UNDEF && m_width >= 0 && m_height >= 0) {
-        deleteScreen();
         createScreen();
         createImages();
         m_stopPlayer = false;

@@ -83,7 +83,7 @@ UserInterfaceMainWindow::UserInterfaceMainWindow(QWidget *parent) :
     ui(new Ui::UserInterfaceMainWindow)
 {
     ui->setupUi(this);
-    setWindowTitle("YUV Player");
+    setFixedSize(size());
     createController();
     m_mouseClickEater = std::make_unique<MouseClickEater>(this);
 
@@ -114,7 +114,7 @@ UserInterfaceMainWindow::UserInterfaceMainWindow(QWidget *parent) :
     //connect signal/slots for UI management from not-main threads
     connect(this, SIGNAL(signalSendCreateScreen()), this, SLOT(signalReceiveCreateScreen()), Qt::AutoConnection);
     connect(this, SIGNAL(signalSendDeleteScreen()), this, SLOT(signalReceiveDeleteScreen()), Qt::AutoConnection);
-    connect(this, SIGNAL(signalSendDisplayImage(RgbImage)), this, SLOT(signalReceiveDisplayImage(RgbImage)), Qt::AutoConnection);
+    connect(this, SIGNAL(signalSendDisplayImage(RgbImage, int, int)), this, SLOT(signalReceiveDisplayImage(RgbImage, int , int)), Qt::AutoConnection);
 
     ui->toolButtonFastBackward->setIcon(QIcon(":/fast-backward.png"));
     ui->toolButtonPreviousFrame->setIcon(QIcon(":/previous-frame.png"));
@@ -170,9 +170,9 @@ void UserInterfaceMainWindow::signalReceiveDeleteScreen(){
     m_imageWidget.reset(nullptr);
 }
 
-void UserInterfaceMainWindow::signalReceiveDisplayImage(RgbImage image){
+void UserInterfaceMainWindow::signalReceiveDisplayImage(RgbImage image, int currentImageId, int maxImageId){
     if(m_imageWidget) {
-        m_imageWidget->displayImage(image);
+        m_imageWidget->displayImage(image, currentImageId, maxImageId);
     }
 }
 
@@ -180,26 +180,14 @@ void
 UserInterfaceMainWindow::createController() {
     auto createScreen = [this](){
         emit signalSendCreateScreen();
-        /*
-        if (!m_imageWidget) {
-            m_imageWidget = std::make_unique<ImageWidget>(nullptr);
-            m_imageWidget->setVisible(true);
-        }
-        */
     };
 
     auto deleteScreen = [this]() {
         emit signalSendDeleteScreen();
-        //m_imageWidget.reset(nullptr);
     };
 
-    auto displayImage = [this](const RgbImage& image) {
-        emit signalSendDisplayImage(image);
-        /*
-        if(m_imageWidget) {
-            m_imageWidget->displayImage(image);
-        }
-        */
+    auto displayImage = [this](const RgbImage& image, int currentImageId, int maxImageId) {
+        emit signalSendDisplayImage(image, currentImageId, maxImageId);
     };
 
     m_playerController = std::make_unique<PlayerController>(createScreen, deleteScreen, displayImage);

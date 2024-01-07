@@ -16,7 +16,7 @@ class ImageWidget : public QWidget
 public:
     explicit ImageWidget(QWidget *parent = 0);
     ~ImageWidget();
-    void displayImage(const RgbImage &rgbImage);
+    void displayImage(const RgbImage &rgbImage, int currentImageIndex, int maxImageIndex);
 
 protected:
     void paintEvent(QPaintEvent* event);

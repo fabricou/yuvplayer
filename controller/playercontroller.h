@@ -21,7 +21,7 @@ class PlayerController
 public:
     PlayerController(std::function<void(void)> createScreen,
         std::function<void(void)> deleteScreen,
-        std::function<void(const RgbImage&)> displayImage);
+        std::function<void(const RgbImage&,int,int)> displayImage);
     ~PlayerController();
 
     PlayerController(const PlayerController&) = delete;
@@ -80,7 +80,7 @@ private:
 
     std::function<void(void)> m_createScreen = [](){};
     std::function<void(void)> m_deleteScreen = [](){};
-    std::function<void(const RgbImage&)> m_displayImage = [](const RgbImage&){};
+    std::function<void(const RgbImage&,int,int)> m_displayImage = [](const RgbImage&,int,int){};
 
     std::mutex m_mutex;
     std::thread m_playerThread;

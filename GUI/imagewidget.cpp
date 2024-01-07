@@ -6,7 +6,7 @@
 #include <QDebug>
 
 void
-ImageWidget::displayImage(const RgbImage &rgbImage) {
+ImageWidget::displayImage(const RgbImage &rgbImage, int currentImageIndex, int maxImageIndex) {
     if (!m_image || m_image->width() != rgbImage.getWidth() || m_image->height() != rgbImage.getHeight()) {
         m_image.reset(new QImage(rgbImage.getWidth(),
                                  rgbImage.getHeight(),
@@ -14,6 +14,8 @@ ImageWidget::displayImage(const RgbImage &rgbImage) {
     }
     uchar *data = m_image->bits();
     memcpy(data, rgbImage.getBuffer(), rgbImage.getWidth()*rgbImage.getHeight()*3);
+    QString title = "im " + QString::number(currentImageIndex) + "/" + QString::number(maxImageIndex);
+    setWindowTitle(title);
     repaint();
 }
 
